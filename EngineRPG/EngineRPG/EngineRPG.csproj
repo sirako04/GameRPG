@@ -41,14 +41,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InventoryItem.cs" />
+    <Compile Include="LivingCreature.cs" />
+    <Compile Include="LootItem.cs" />
+    <Compile Include="PlayerQuest.cs" />
+    <Compile Include="QuestCompletionItem.cs" />
+    <Compile Include="Weapon.cs" />
+    <Compile Include="Quest.cs" />
+    <Compile Include="Monster.cs" />
+    <Compile Include="Location.cs" />
+    <Compile Include="Item.cs" />
+    <Compile Include="HealingPotion.cs" />
     <Compile Include="EngineRPG.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\GameRPG\GameRPG\GameRPG.csproj">
-      <Project>{a0413abe-76b7-49b4-932d-d1f4d2541677}</Project>
-      <Name>GameRPG</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
