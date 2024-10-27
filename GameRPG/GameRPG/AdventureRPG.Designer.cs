@@ -287,6 +287,7 @@
             this.Name = "AdventureRPG";
             this.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
             this.Text = "RPG Adventure";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AdventureRPG_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.dgvInventory)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvQuests)).EndInit();
             this.ResumeLayout(false);
@@ -315,9 +316,9 @@
         private System.Windows.Forms.Button btnSouth;
         private System.Windows.Forms.Button btnWest;
         private System.Windows.Forms.RichTextBox rtbLocation;
-        private System.Windows.Forms.RichTextBox rtbMessages;
         private System.Windows.Forms.DataGridView dgvInventory;
         private System.Windows.Forms.DataGridView dgvQuests;
+        private System.Windows.Forms.RichTextBox rtbMessages;
     }
 }
 
