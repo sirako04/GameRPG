@@ -1,14 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace EngineRPG
 {
-   public class LivingCreature
+   public class LivingCreature : INotifyPropertyChanged
     {
-        public int CurrentHitPoints { get; set; }
+        private int _currentHitPoints;     
+        public int CurrentHitPoints 
+        {
+            get { return _currentHitPoints; }
+
+            set 
+            { _currentHitPoints = value;
+             OnPropertyChanged("CurrentHitPoints");
+            }
+
+        }
         public int MaximumHitPoints { get; set; }
 
         public LivingCreature(int currentHitPoints, int maximumHitPoints) 
@@ -16,5 +27,10 @@ namespace EngineRPG
             CurrentHitPoints = currentHitPoints;
             MaximumHitPoints = maximumHitPoints;
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
     }
+
 }
