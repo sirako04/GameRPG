@@ -253,10 +253,7 @@ namespace EngineRPG
         }
         private void RaiseMessage(string message, bool addExtraNewLine = false)
         {
-            if (OnMessage != null)
-            {
-                OnMessage(this, new MessageEventArgs(message, addExtraNewLine));
-            }
+            OnMessage?.Invoke(this, new MessageEventArgs(message, addExtraNewLine));
         }
         public void MoveTo(Location newLocation)
         {
@@ -460,7 +457,7 @@ namespace EngineRPG
         public void UsePotion(HealingPotion potion)
         {
             // Add healing amount to the player's current hit points
-            CurrentHitPoints = (CurrentHitPoints + potion.AmountToHeal);
+            CurrentHitPoints += potion.AmountToHeal;
 
             // CurrentHitPoints cannot exceed player's MaximumHitPoints
             if (CurrentHitPoints > MaximumHitPoints)

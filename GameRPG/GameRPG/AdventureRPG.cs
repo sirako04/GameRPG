@@ -11,8 +11,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using EngineRPG;
 using System.IO;
+
 namespace GameRPG
-{
+{ 
     public partial class AdventureRPG : Form
     {
         private Player _player;
@@ -101,6 +102,13 @@ namespace GameRPG
         {
             _player.MoveWest();
         }
+        private void btnTrade_Click(object sender, EventArgs e) 
+        {
+            TradingScreen tradingScreen = new TradingScreen(_player);
+            tradingScreen.StartPosition = FormStartPosition.CenterParent;
+            tradingScreen.ShowDialog(this);
+
+        }
         private void btnUseWeapon_Click(object sender, EventArgs e)
         {
             // Get the currently selected weapon from the cboWeapons ComboBox
@@ -143,8 +151,9 @@ namespace GameRPG
                     btnEast.Visible = (_player.CurrentLocation.LocationToEast != null);
                     btnSouth.Visible = (_player.CurrentLocation.LocationToSouth != null);
                     btnWest.Visible = (_player.CurrentLocation.LocationToWest != null);
-                    // Display current location name and description
-                    rtbLocation.Text = _player.CurrentLocation.Name + Environment.NewLine;
+                    btnTrade.Visible = (_player.CurrentLocation.VendorWorkingHere != null);
+                // Display current location name and description
+                rtbLocation.Text = _player.CurrentLocation.Name + Environment.NewLine;
                     rtbLocation.Text += _player.CurrentLocation.Description + Environment.NewLine;
                     if (_player.CurrentLocation.MonsterLivingHere == null)
                     {
