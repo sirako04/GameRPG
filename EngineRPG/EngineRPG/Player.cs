@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.ComponentModel;
 namespace EngineRPG
-
+   
 {
 
     public class Player : LivingCreature
@@ -251,7 +251,7 @@ namespace EngineRPG
                 playerQuest.IsCompleted = true;
             }
         }
-        private void RaiseMessage(string message, bool addExtraNewLine = false)
+        public void RaiseMessage(string message, bool addExtraNewLine = false)
         {
             OnMessage?.Invoke(this, new MessageEventArgs(message, addExtraNewLine));
         }
@@ -594,6 +594,13 @@ namespace EngineRPG
                 playerQuests.AppendChild(playerQuest);
             }
             return playerData.InnerXml; // The XML document, as a string, so we can save the data to disk
+        }
+
+        public static Player CreatePlayerFromDataBase(int currentHitPoints,int maximumHitPoints,int gold, int experiencePoints, int currentLocationID) 
+        {
+            Player player = new Player(currentHitPoints,maximumHitPoints,gold,experiencePoints);
+            player.MoveTo(World.LocationByID(currentLocationID));
+            return player;
         }
        
 

@@ -23,15 +23,18 @@ namespace GameRPG
         public AdventureRPG()
         {
             InitializeComponent();
-            
-            
-            if (File.Exists(PLAYER_DATA_FILE_NAME))
+
+            _player = PlayerDataMapper.CreateFromDatabase();
+            if (_player == null)
             {
-                _player = Player.CreatePlayerFromXmlString(File.ReadAllText(PLAYER_DATA_FILE_NAME));
-            }
-            else
-            {
-                _player = Player.CreateDefaultPlayer();
+                if (File.Exists(PLAYER_DATA_FILE_NAME))
+                {
+                    _player = Player.CreatePlayerFromXmlString(File.ReadAllText(PLAYER_DATA_FILE_NAME));
+                }
+                else
+                {
+                    _player = Player.CreateDefaultPlayer();
+                }
             }
 
             lblHitPoints.DataBindings.Add(nameof(Text), _player, nameof(_player.CurrentHitPoints));
@@ -193,6 +196,8 @@ namespace GameRPG
         private void AdventureRPG_FormClosing(object sender, FormClosingEventArgs e)
         {
             File.WriteAllText(PLAYER_DATA_FILE_NAME, _player.ToXmlString());
+
+            PlayerDataMapper.SavetoDataBase(_player);
         }
     }
     

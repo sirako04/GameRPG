@@ -75,6 +75,7 @@
     <Compile Include="LivingCreature.cs" />
     <Compile Include="LootItem.cs" />
     <Compile Include="MessageEventArgs.cs" />
+    <Compile Include="PlayerDataMapper.cs" />
     <Compile Include="PlayerQuest.cs" />
     <Compile Include="QuestCompletionItem.cs" />
     <Compile Include="RandomNumberGenerator.cs" />

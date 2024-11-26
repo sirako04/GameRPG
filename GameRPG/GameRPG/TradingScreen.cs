@@ -59,7 +59,8 @@ namespace GameRPG
             });
             dgvMyItems.Columns.Add(new DataGridViewButtonColumn
             {
-                HeaderText = "Sell 1",
+                HeaderText = "Sell Item",
+                Text = "Sell 1",
                 UseColumnTextForButtonValue = true,
                 Width = 50,
                 DataPropertyName = nameof(InventoryItem.ItemID)
@@ -93,6 +94,7 @@ namespace GameRPG
                 });
                 dgvVendorItems.Columns.Add(new DataGridViewButtonColumn
                 {
+                    HeaderText = "Buy Item",
                     Text = "Buy 1",
                     UseColumnTextForButtonValue = true,
                     Width = 50,
@@ -116,6 +118,8 @@ namespace GameRPG
                 {
                     _currentPlayer.RemoveItemFromInventory(ItemBeingSold);
                     _currentPlayer.Gold += ItemBeingSold.Price;
+                    _currentPlayer.RaiseMessage("item sold :" + ItemBeingSold.Name);
+                    _currentPlayer.RaiseMessage("you obtained : " + ItemBeingSold.Price + " Gold");
                 }
 
 
@@ -134,6 +138,8 @@ namespace GameRPG
                 {
                     _currentPlayer.AddItemToInventory(itemBeingBought);
                     _currentPlayer.Gold -= itemBeingBought.Price;
+                    _currentPlayer.RaiseMessage(" you bought :" + itemBeingBought.Name + " for : "+ itemBeingBought.Price + " Gold ");
+                    
                 }
                 else
                 {
