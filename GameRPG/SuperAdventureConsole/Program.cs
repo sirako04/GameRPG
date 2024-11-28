@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using EngineRPG;
 using System.IO;
-using System.Data;
-using System.Data.SqlClient;
+using EngineRPG;
+
 namespace SuperAdventureConsole
 {
     public class Program
@@ -364,6 +359,7 @@ namespace SuperAdventureConsole
         private static void LoadGameData()
         {
             _player = PlayerDataMapper.CreateFromDatabase();
+
             if (_player == null)
             {
                 if (File.Exists(PLAYER_DATA_FILE_NAME))

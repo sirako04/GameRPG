@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Media;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using EngineRPG;
 using System.IO;
 
 namespace GameRPG
-{ 
+{
     public partial class AdventureRPG : Form
     {
         private Player _player;
