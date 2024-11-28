@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace EngineRPG
 {
-   public class PlayerQuest : INotifyPropertyChanged
+    public class PlayerQuest : INotifyPropertyChanged
     {
         private Quest _details;
         private bool _isCompleted;

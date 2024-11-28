@@ -41,8 +41,7 @@ namespace EngineRPG
                         int experiencePoints = (int)reader["ExperiencePoints"];
                         int currentLocationID = (int)reader["CurrentLocationID"];
 
-                        player = Player.CreatePlayerFromDataBase
-                    (currentHitPoints, maximumHitPoints, gold, experiencePoints, currentLocationID);
+                        player = Player.CreatePlayerFromDataBase(currentHitPoints, maximumHitPoints, gold, experiencePoints, currentLocationID);
                     }
                     // Read the rows/records from the Quest table, and add them to the player
                     using (SqlCommand questCommand = connection.CreateCommand())
@@ -105,112 +104,22 @@ namespace EngineRPG
                     {
                         existingRowCountCommand.CommandType = CommandType.Text;
                         existingRowCountCommand.CommandText = "SELECT count(*) FROM SavedGame";
-                        
-                        int existingRowCount = (int)existingRowCountCommand.ExecuteScalar();
-                        if (existingRowCount == 0) 
+
+                        int existingPlayerRowCount = (int)existingRowCountCommand.ExecuteScalar();
+                        if (existingPlayerRowCount == 0)
                         {
-                            using (SqlCommand insertSavedGame = connection.CreateCommand())
-                            {
-                                insertSavedGame.CommandType = CommandType.Text;
-                                insertSavedGame.CommandText = "INSERT INTO SavedGame "
-                                +"(CurrentHitPoints, MaximumHitPoints, Gold, ExperiencePoints, CurrentLocationID) "
-                                + "VALUES " 
-                                + "(@CurrentHitPoints,@MaximumHitPoints,@Gold,@ExperiencePoints,@CurrentLocationID)";
-                                // Pass the values from the player object, to the SQL query, using parameters
-                                insertSavedGame.Parameters.Add("@CurrentHitPoints", SqlDbType.Int);
-                                insertSavedGame.Parameters["@CurrentHitPoints"].Value = player.CurrentHitPoints;
-
-                                insertSavedGame.Parameters.Add("@MaximumHitPoints", SqlDbType.Int);
-                                insertSavedGame.Parameters["@MaximumHitPoints"].Value = player.MaximumHitPoints;
-
-                                insertSavedGame.Parameters.Add("@Gold", SqlDbType.Int);
-                                insertSavedGame.Parameters["@Gold"].Value = player.Gold;
-
-                                insertSavedGame.Parameters.Add("@ExperiencePoints", SqlDbType.Int);
-                                insertSavedGame.Parameters["@ExperiencePoints"].Value = player.ExperiencePoints;
-
-                                insertSavedGame.Parameters.Add("@CurrentLocationID", SqlDbType.Int);
-                                insertSavedGame.Parameters["@CurrentLocationID"].Value = player.CurrentLocation.ID;
-                                // Perform the SQL command.
-                                // ExecuteNonQuery, because this query does not return any results.
-                                insertSavedGame.ExecuteNonQuery();
-                            }
+                            InsertPlayerStatsData(player, connection);
                         }
                         else
                         {
-                            using (SqlCommand updateSavedGame = connection.CreateCommand()) 
-                            {
-                                updateSavedGame.CommandType = CommandType.Text;
-                                updateSavedGame.CommandText = "UPDATE SavedGame "
-                                +"SET CurrentHitPoints = @CurrentHitPoints, "+"Gold = @Gold, " +"ExperiencePoints = @ExperiencePoints, "
-                                + "CurrentLocationID = @CurrentLocationID";
-
-                                updateSavedGame.Parameters.Add("@CurrentHitPoints", SqlDbType.Int);
-                                updateSavedGame.Parameters["@CurrentHitPoints"].Value = player.CurrentHitPoints;
-
-                                updateSavedGame.Parameters.Add("@MaximumHitPoints", SqlDbType.Int);
-                                updateSavedGame.Parameters["@MaximumHitPoints"].Value = player.MaximumHitPoints;
-
-                                updateSavedGame.Parameters.Add("@Gold", SqlDbType.Int);
-                                updateSavedGame.Parameters["@Gold"].Value = player.Gold;
-
-                                updateSavedGame.Parameters.Add("@ExperiencePoints", SqlDbType.Int);
-                                updateSavedGame.Parameters["@ExperiencePoints"].Value = player.ExperiencePoints;
-
-                                updateSavedGame.Parameters.Add("@CurrentLocationID", SqlDbType.Int);
-                                updateSavedGame.Parameters["@CurrentLocationID"].Value = player.CurrentLocation.ID;
-
-                                updateSavedGame.ExecuteNonQuery();  
-
-                            }
+                            UpdatePlayerStatsData(player, connection);
                         }
                     }
-                                    //UPDATING QUESTS
-                    using (SqlCommand deleteQuestsCommand = connection.CreateCommand()) 
-                    {
-                        deleteQuestsCommand.CommandType = CommandType.Text;
-                        deleteQuestsCommand.CommandText = "DELETE  FROM Quest";
-                        deleteQuestsCommand.ExecuteNonQuery();
-                    }
-                    foreach (PlayerQuest playerQuest in player.Quests)
-                    {
-                        using (SqlCommand insertQuestCommand = connection.CreateCommand()) 
-                        {
-                            insertQuestCommand.CommandType = CommandType.Text;
-                            insertQuestCommand.CommandText = 
-                           "INSERT INTO Quest (QuestID, IsCompleted) VALUES (@QuestID, @IsCompleted)";
+                    
+                    UpdatingPlayerQuestData(player, connection);
 
-                            insertQuestCommand.Parameters.Add("@QuestID", SqlDbType.Int);
-                            insertQuestCommand.Parameters["@QuestID"].Value = playerQuest.Details.ID;
-                            insertQuestCommand.Parameters.Add("@IsCompleted", SqlDbType.Bit);
-                            insertQuestCommand.Parameters["@IsCompleted"].Value = playerQuest.IsCompleted;
-
-                            insertQuestCommand.ExecuteNonQuery();
-                        }
-                    }
-                    //UPDATING INVENTORY
-                    using (SqlCommand deleteInventoryCommand = connection.CreateCommand()) 
-                    {
-                        deleteInventoryCommand.CommandType = CommandType.Text;
-                        deleteInventoryCommand.CommandText = "DELETE FROM Inventory";
-                        deleteInventoryCommand.ExecuteNonQuery();   
-                    }
-                    foreach (InventoryItem Inventoryitem in player.Inventory)
-                    {
-                        using (SqlCommand insertInventoryCommand = connection.CreateCommand())
-                        {
-                            insertInventoryCommand.CommandType = CommandType.Text;
-                            insertInventoryCommand.CommandText = 
-                           "INSERT INTO Inventory (InventoryItemID, Quantity) VALUES (@InventoryItemID, @Quantity)";
-
-                            insertInventoryCommand.Parameters.Add("@InventoryItemID", SqlDbType.Int);
-                            insertInventoryCommand.Parameters["@InventoryItemID"].Value =Inventoryitem.ItemID;
-                            insertInventoryCommand.Parameters.Add("@Quantity", SqlDbType.Int);
-                            insertInventoryCommand.Parameters["@Quantity"].Value =Inventoryitem.Quantity;
-
-                            insertInventoryCommand.ExecuteNonQuery();
-                        }
-                    }
+                    
+                    UpdatingInventoryData(player, connection);
                 }
 
 
@@ -218,6 +127,117 @@ namespace EngineRPG
             catch (Exception)
             {
                 // ignoring for now
+            }
+        }
+
+        private static void InsertPlayerStatsData(Player player, SqlConnection connection)
+        {
+            using (SqlCommand insertSavedGame = connection.CreateCommand())
+            {
+                insertSavedGame.CommandType = CommandType.Text;
+                insertSavedGame.CommandText = "INSERT INTO SavedGame "
+                + "(CurrentHitPoints, MaximumHitPoints, Gold, ExperiencePoints, CurrentLocationID) "
+                + "VALUES "
+                + "(@CurrentHitPoints,@MaximumHitPoints,@Gold,@ExperiencePoints,@CurrentLocationID)";
+                // Pass the values from the player object, to the SQL query, using parameters
+                insertSavedGame.Parameters.Add("@CurrentHitPoints", SqlDbType.Int);
+                insertSavedGame.Parameters["@CurrentHitPoints"].Value = player.CurrentHitPoints;
+
+                insertSavedGame.Parameters.Add("@MaximumHitPoints", SqlDbType.Int);
+                insertSavedGame.Parameters["@MaximumHitPoints"].Value = player.MaximumHitPoints;
+
+                insertSavedGame.Parameters.Add("@Gold", SqlDbType.Int);
+                insertSavedGame.Parameters["@Gold"].Value = player.Gold;
+
+                insertSavedGame.Parameters.Add("@ExperiencePoints", SqlDbType.Int);
+                insertSavedGame.Parameters["@ExperiencePoints"].Value = player.ExperiencePoints;
+
+                insertSavedGame.Parameters.Add("@CurrentLocationID", SqlDbType.Int);
+                insertSavedGame.Parameters["@CurrentLocationID"].Value = player.CurrentLocation.ID;
+                // Perform the SQL command.
+                // ExecuteNonQuery, because this query does not return any results.
+                insertSavedGame.ExecuteNonQuery();
+            }
+        }
+
+        private static void UpdatePlayerStatsData(Player player, SqlConnection connection)
+        {
+            using (SqlCommand updateSavedGame = connection.CreateCommand())
+            {
+                updateSavedGame.CommandType = CommandType.Text;
+                updateSavedGame.CommandText = "UPDATE SavedGame "
+                + "SET CurrentHitPoints = @CurrentHitPoints, " + "MaximumHitPoints = @MaximumHitPoints, " + "Gold = @Gold, " + "ExperiencePoints = @ExperiencePoints, "
+                + "CurrentLocationID = @CurrentLocationID";
+
+                updateSavedGame.Parameters.Add("@CurrentHitPoints", SqlDbType.Int);
+                updateSavedGame.Parameters["@CurrentHitPoints"].Value = player.CurrentHitPoints;
+
+                updateSavedGame.Parameters.Add("@MaximumHitPoints", SqlDbType.Int);
+                updateSavedGame.Parameters["@MaximumHitPoints"].Value = player.MaximumHitPoints;
+
+                updateSavedGame.Parameters.Add("@Gold", SqlDbType.Int);
+                updateSavedGame.Parameters["@Gold"].Value = player.Gold;
+
+                updateSavedGame.Parameters.Add("@ExperiencePoints", SqlDbType.Int);
+                updateSavedGame.Parameters["@ExperiencePoints"].Value = player.ExperiencePoints;
+
+                updateSavedGame.Parameters.Add("@CurrentLocationID", SqlDbType.Int);
+                updateSavedGame.Parameters["@CurrentLocationID"].Value = player.CurrentLocation.ID;
+
+                updateSavedGame.ExecuteNonQuery();
+
+            }
+        }
+
+        private static void UpdatingPlayerQuestData(Player player, SqlConnection connection)
+        {
+            using (SqlCommand deleteQuestsCommand = connection.CreateCommand())
+            {
+                deleteQuestsCommand.CommandType = CommandType.Text;
+                deleteQuestsCommand.CommandText = "DELETE  FROM Quest";
+                deleteQuestsCommand.ExecuteNonQuery();
+            }
+            foreach (PlayerQuest playerQuest in player.Quests)
+            {
+                using (SqlCommand insertQuestCommand = connection.CreateCommand())
+                {
+                    insertQuestCommand.CommandType = CommandType.Text;
+                    insertQuestCommand.CommandText =
+                   "INSERT INTO Quest (QuestID, IsCompleted) VALUES (@QuestID, @IsCompleted)";
+
+                    insertQuestCommand.Parameters.Add("@QuestID", SqlDbType.Int);
+                    insertQuestCommand.Parameters["@QuestID"].Value = playerQuest.Details.ID;
+                    insertQuestCommand.Parameters.Add("@IsCompleted", SqlDbType.Bit);
+                    insertQuestCommand.Parameters["@IsCompleted"].Value = playerQuest.IsCompleted;
+
+                    insertQuestCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
+        private static void UpdatingInventoryData(Player player, SqlConnection connection)
+        {
+            using (SqlCommand deleteInventoryCommand = connection.CreateCommand())
+            {
+                deleteInventoryCommand.CommandType = CommandType.Text;
+                deleteInventoryCommand.CommandText = "DELETE FROM Inventory";
+                deleteInventoryCommand.ExecuteNonQuery();
+            }
+            foreach (InventoryItem Inventoryitem in player.Inventory)
+            {
+                using (SqlCommand insertInventoryCommand = connection.CreateCommand())
+                {
+                    insertInventoryCommand.CommandType = CommandType.Text;
+                    insertInventoryCommand.CommandText =
+                   "INSERT INTO Inventory (InventoryItemID, Quantity) VALUES (@InventoryItemID, @Quantity)";
+
+                    insertInventoryCommand.Parameters.Add("@InventoryItemID", SqlDbType.Int);
+                    insertInventoryCommand.Parameters["@InventoryItemID"].Value = Inventoryitem.ItemID;
+                    insertInventoryCommand.Parameters.Add("@Quantity", SqlDbType.Int);
+                    insertInventoryCommand.Parameters["@Quantity"].Value = Inventoryitem.Quantity;
+
+                    insertInventoryCommand.ExecuteNonQuery();
+                }
             }
         }
     }

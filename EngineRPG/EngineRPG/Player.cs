@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.ComponentModel;
 namespace EngineRPG
-   
+
 {
 
     public class Player : LivingCreature
@@ -179,7 +177,7 @@ namespace EngineRPG
             
         }
 
-        public bool HasThisQuest(Quest quest)
+        public bool PlayerHasThisQuest(Quest quest)
         {
            return Quests.Any(pq => pq.Details.ID == quest.ID);
         }
@@ -270,18 +268,13 @@ namespace EngineRPG
             // Completely heal the player
             CurrentHitPoints = MaximumHitPoints;
 
-            // Does the location have a quest?
-            if (newLocation.QuestAvailableHere != null)
+            if (newLocation.HasAQuest)
             {
-                // See if the player already has the quest, and if they've completed it
-                bool playerAlreadyHasQuest = HasThisQuest(newLocation.QuestAvailableHere);
-                bool playerAlreadyCompletedQuest = CompletedThisQuest(newLocation.QuestAvailableHere);
-
-                // See if the player already has the quest
-                if (playerAlreadyHasQuest)
+                         
+                if (PlayerHasThisQuest(newLocation.QuestAvailableHere))
                 {
-                    // If the player has not completed the quest yet
-                    if (!playerAlreadyCompletedQuest)
+                   
+                    if (!CompletedThisQuest(newLocation.QuestAvailableHere))
                     {
                         // See if the player has all the items needed to complete the quest
                         bool playerHasAllItemsToCompleteQuest = HasAllQuestCompletionItems(newLocation.QuestAvailableHere);
@@ -290,26 +283,7 @@ namespace EngineRPG
                         if (playerHasAllItemsToCompleteQuest)
                         {
                             // Display message
-                            RaiseMessage("");
-                            RaiseMessage("You complete the '" + newLocation.QuestAvailableHere.Name + "' quest.");
-
-                            // Remove quest items from inventory
-                            RemoveQuestCompletionItems(newLocation.QuestAvailableHere);
-
-                            // Give quest rewards
-                            RaiseMessage("You receive: ");
-                            RaiseMessage(newLocation.QuestAvailableHere.RewardExperiencePoints + " experience points");
-                            RaiseMessage(newLocation.QuestAvailableHere.RewardGold + " gold");
-                            RaiseMessage(newLocation.QuestAvailableHere.RewardItem.Name, true);
-
-                            AddExperiencePoints(newLocation.QuestAvailableHere.RewardExperiencePoints);
-                            Gold += newLocation.QuestAvailableHere.RewardGold;
-
-                            // Add the reward item to the player's inventory
-                            AddItemToInventory(newLocation.QuestAvailableHere.RewardItem);
-
-                            // Mark the quest as completed
-                            MarkQuestCompleted(newLocation.QuestAvailableHere);
+                            GivePlayerQuestRewards(newLocation);
                         }
                     }
                 }
@@ -360,6 +334,26 @@ namespace EngineRPG
                 _currentMonster = null;
             }
         }
+
+        private void GivePlayerQuestRewards(Location newLocation)
+        {
+            RaiseMessage("");
+            RaiseMessage("You completed the '" + newLocation.QuestAvailableHere.Name + "' quest.");
+            RaiseMessage("You receive: ");
+            RaiseMessage(newLocation.QuestAvailableHere.RewardExperiencePoints + " experience points");
+            RaiseMessage(newLocation.QuestAvailableHere.RewardGold + " gold");
+            RaiseMessage(newLocation.QuestAvailableHere.RewardItem.Name, true);
+
+
+            AddExperiencePoints(newLocation.QuestAvailableHere.RewardExperiencePoints);
+            Gold += newLocation.QuestAvailableHere.RewardGold;
+      
+            RemoveQuestCompletionItems(newLocation.QuestAvailableHere);
+            AddItemToInventory(newLocation.QuestAvailableHere.RewardItem);
+           
+            MarkQuestCompleted(newLocation.QuestAvailableHere);
+        }
+
         public void UseWeapon(Weapon weapon)
         {
             // Determine the amount of damage to do to the monster
@@ -532,6 +526,21 @@ namespace EngineRPG
             // Create the top-level XML node
             XmlNode player = playerData.CreateElement("Player");
             playerData.AppendChild(player);
+            XmlNode stats = CreatePlayerStatsNodeToXml(playerData, player);
+
+            if (CurrentWeapon != null)
+            {
+                XmlNode currentWeapon = playerData.CreateElement("CurrentWeapon");
+                currentWeapon.AppendChild(playerData.CreateTextNode(this.CurrentWeapon.ID.ToString()));
+                stats.AppendChild(currentWeapon);
+            }
+            CreateInventoryItemNodeToXml(playerData, player);
+            CreateQuestNodeToXml(playerData, player);
+            return playerData.InnerXml; // The XML document, as a string, so we can save the data to disk
+        }
+
+        private XmlNode CreatePlayerStatsNodeToXml(XmlDocument playerData, XmlNode player)
+        {
             // Create the "Stats" child node to hold the other player statistics nodes
             XmlNode stats = playerData.CreateElement("Stats");
             player.AppendChild(stats);
@@ -549,20 +558,16 @@ namespace EngineRPG
             experiencePoints.AppendChild(playerData.CreateTextNode(this.ExperiencePoints.ToString()));
             stats.AppendChild(experiencePoints);
             XmlNode level = playerData.CreateElement("Level");
-
-                //das mit level selber hinzugefügt
             level.AppendChild(playerData.CreateTextNode(this.Level.ToString()));
             stats.AppendChild(level);
             XmlNode currentLocation = playerData.CreateElement("CurrentLocation");
             currentLocation.AppendChild(playerData.CreateTextNode(this.CurrentLocation.ID.ToString()));
             stats.AppendChild(currentLocation);
+            return stats;
+        }
 
-            if (CurrentWeapon != null)
-            {
-                XmlNode currentWeapon = playerData.CreateElement("CurrentWeapon");
-                currentWeapon.AppendChild(playerData.CreateTextNode(this.CurrentWeapon.ID.ToString()));
-                stats.AppendChild(currentWeapon);
-            }
+        private void CreateInventoryItemNodeToXml(XmlDocument playerData, XmlNode player)
+        {
             // Create the "InventoryItems" child node to hold each InventoryItem node
             XmlNode inventoryItems = playerData.CreateElement("InventoryItems");
             player.AppendChild(inventoryItems);
@@ -578,6 +583,10 @@ namespace EngineRPG
                 inventoryItem.Attributes.Append(quantityAttribute);
                 inventoryItems.AppendChild(inventoryItem);
             }
+        }
+
+        private void CreateQuestNodeToXml(XmlDocument playerData, XmlNode player)
+        {
             // Create the "PlayerQuests" child node to hold each PlayerQuest node
             XmlNode playerQuests = playerData.CreateElement("PlayerQuests");
             player.AppendChild(playerQuests);
@@ -593,7 +602,6 @@ namespace EngineRPG
                 playerQuest.Attributes.Append(isCompletedAttribute);
                 playerQuests.AppendChild(playerQuest);
             }
-            return playerData.InnerXml; // The XML document, as a string, so we can save the data to disk
         }
 
         public static Player CreatePlayerFromDataBase(int currentHitPoints,int maximumHitPoints,int gold, int experiencePoints, int currentLocationID) 
