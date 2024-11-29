@@ -12,7 +12,6 @@ namespace GameRPG
         private Player _player;
         private const string PLAYER_DATA_FILE_NAME = "PlayerData.xml";
 
-
         public AdventureRPG()
         {
             InitializeComponent();
@@ -29,18 +28,22 @@ namespace GameRPG
                     _player = Player.CreateDefaultPlayer();
                 }
             }
+            BindingPlayerDataToUI();
+        }
 
+        private void BindingPlayerDataToUI()
+        {
             lblHitPoints.DataBindings.Add(nameof(Text), _player, nameof(_player.CurrentHitPoints));
             lblGold.DataBindings.Add(nameof(Text), _player, nameof(_player.Gold));
             lblExperience.DataBindings.Add(nameof(Text), _player, nameof(_player.ExperiencePoints));
             lblLevel.DataBindings.Add(nameof(Text), _player, nameof(_player.Level));
-            
+
             cboWeapons.DataSource = _player.Weapons;
             cboWeapons.DisplayMember = "Name";
             cboWeapons.ValueMember = "Id";
             if (_player.CurrentWeapon != null)
             {
-                cboWeapons.SelectedItem = _player.CurrentWeapon;  
+                cboWeapons.SelectedItem = _player.CurrentWeapon;
             }
             cboWeapons.SelectedIndexChanged += cboWeapons_SelectedIndexChanged;
             cboPotions.DataSource = _player.Potions;
@@ -50,23 +53,24 @@ namespace GameRPG
             _player.OnMessage += DisplayMessage;
 
             _player.MoveTo(_player.CurrentLocation);
-             // UI changes automatically due to DataBinding
+
+            // UI changes automatically due to DataBinding
             dgvInventory.RowHeadersVisible = false;
             dgvInventory.AutoGenerateColumns = false;
             dgvInventory.DataSource = _player.Inventory;
-            dgvInventory.Columns.Add(new DataGridViewTextBoxColumn 
+            dgvInventory.Columns.Add(new DataGridViewTextBoxColumn
             {
                 HeaderText = "Name",
-                Width = 197 ,
+                Width = 197,
                 DataPropertyName = "Description"
             });
             dgvInventory.Columns.Add(new DataGridViewTextBoxColumn
             {
-                HeaderText= "Quantity",
+                HeaderText = "Quantity",
                 DataPropertyName = "Quantity"
             });
             dgvQuests.RowHeadersVisible = false;
-            dgvQuests.AutoGenerateColumns=false;
+            dgvQuests.AutoGenerateColumns = false;
             dgvQuests.DataSource = _player.Quests;
             dgvQuests.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -79,7 +83,6 @@ namespace GameRPG
                 HeaderText = "Done?",
                 DataPropertyName = "IsCompleted"
             });
-
         }
 
         private void btnNorth_Click(object sender, EventArgs e)

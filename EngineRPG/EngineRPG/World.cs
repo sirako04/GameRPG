@@ -137,7 +137,6 @@ namespace EngineRPG
             Location spiderField = new Location(LOCATION_ID_SPIDER_FIELD, "Forest", "You see spider webs covering covering the trees in this forest.");
             spiderField.MonsterLivingHere = MonsterByID(MONSTER_ID_GIANT_SPIDER);
 
-            // Location vendor = new Location(LOCATION_ID_VENDOR, "The Vendor", "You see a Vendor where you can buy and sell items");
 
             // Link the locations together
             home.LocationToNorth = townSquare;

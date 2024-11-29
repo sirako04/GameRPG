@@ -19,7 +19,7 @@ namespace EngineRPG
                     Player player;
                     using (SqlCommand savedGameCommand = connection.CreateCommand())
                     {
-                        // This SQL statement reads the first rows in teh SavedGame table.
+                        
                         savedGameCommand.CommandType = CommandType.Text;
                         savedGameCommand.CommandText = "SELECT TOP 1 * FROM SavedGame";
 
@@ -28,7 +28,7 @@ namespace EngineRPG
 
                         if (!reader.HasRows)
                         {
-                            // no data rows so return null 
+                            // no data rows 
                             return null;
                         }
                         // get the row from the data reader
@@ -43,45 +43,10 @@ namespace EngineRPG
 
                         player = Player.CreatePlayerFromDataBase(currentHitPoints, maximumHitPoints, gold, experiencePoints, currentLocationID);
                     }
-                    // Read the rows/records from the Quest table, and add them to the player
-                    using (SqlCommand questCommand = connection.CreateCommand())
-                    {
-                        questCommand.CommandType = CommandType.Text;
-                        questCommand.CommandText = "SELECT * FROM Quest";
-                        SqlDataReader reader = questCommand.ExecuteReader();
+                    
+                    AddQuestsDataToPlayer(connection, player);
+                    AddInventoryDataToPlayer(connection, player);
 
-                        if (reader.HasRows)
-                        {
-                            while (reader.Read())
-                            {
-                                int questID = (int)reader["QuestID"];
-                                bool isCompleted = (bool)reader["IsCompleted"];
-
-                                PlayerQuest playerQuest = new PlayerQuest(World.QuestByID(questID));
-                                playerQuest.IsCompleted = isCompleted;
-                                // Add the PlayerQuest to the player's property
-                                player.Quests.Add(playerQuest);
-                            }
-                        }
-                    }
-                    using (SqlCommand inventoryCommand = connection.CreateCommand())
-                    {
-                        inventoryCommand.CommandType = CommandType.Text;
-                        inventoryCommand.CommandText = "SELECT * FROM Inventory";
-                        SqlDataReader reader = inventoryCommand.ExecuteReader();
-                        if (reader.HasRows)
-                        {
-                            while (reader.Read())
-                            {
-                                int inventoryItemID = (int)reader["InventoryItemID"];
-                                int quantity = (int)reader["Quantity"];
-
-                                player.AddItemToInventory
-                                (World.ItemByID(inventoryItemID), quantity);
-
-                            }
-                        }
-                    }
                     // player is built from DB return it now
                     return player;
                 }
@@ -91,6 +56,50 @@ namespace EngineRPG
 
             }
             return null;
+        }
+        private static void AddQuestsDataToPlayer(SqlConnection connection, Player player)
+        {
+            using (SqlCommand questCommand = connection.CreateCommand())
+            {
+                questCommand.CommandType = CommandType.Text;
+                questCommand.CommandText = "SELECT * FROM Quest";
+                SqlDataReader reader = questCommand.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int questID = (int)reader["QuestID"];
+                        bool isCompleted = (bool)reader["IsCompleted"];
+
+                        PlayerQuest playerQuest = new PlayerQuest(World.QuestByID(questID));
+                        playerQuest.IsCompleted = isCompleted;
+                        // Add the PlayerQuest to the player's property
+                        player.Quests.Add(playerQuest);
+                    }
+                }
+            }
+        }
+        private static void AddInventoryDataToPlayer(SqlConnection connection, Player player)
+        {
+            using (SqlCommand inventoryCommand = connection.CreateCommand())
+            {
+                inventoryCommand.CommandType = CommandType.Text;
+                inventoryCommand.CommandText = "SELECT * FROM Inventory";
+                SqlDataReader reader = inventoryCommand.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int inventoryItemID = (int)reader["InventoryItemID"];
+                        int quantity = (int)reader["Quantity"];
+
+                        player.AddItemToInventory
+                        (World.ItemByID(inventoryItemID), quantity);
+
+                    }
+                }
+            }
         }
         public static void SavetoDataBase(Player player)
         {
