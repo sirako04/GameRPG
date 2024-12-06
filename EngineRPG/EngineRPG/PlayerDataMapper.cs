@@ -5,7 +5,7 @@ namespace EngineRPG
 {
     public static class PlayerDataMapper
     {
-        private static readonly string _connectionString =
+        public static readonly string _connectionString =
 "Data Source=(local);Initial Catalog=SuperAdventure;Integrated Security=True";
 
         public static Player CreateFromDatabase()
@@ -19,7 +19,7 @@ namespace EngineRPG
                     Player player;
                     using (SqlCommand savedGameCommand = connection.CreateCommand())
                     {
-                        
+                       
                         savedGameCommand.CommandType = CommandType.Text;
                         savedGameCommand.CommandText = "SELECT TOP 1 * FROM SavedGame";
 

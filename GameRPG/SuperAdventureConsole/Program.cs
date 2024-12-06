@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.IO;
 using EngineRPG;
-
 namespace SuperAdventureConsole
 {
     public class Program
@@ -161,7 +160,7 @@ namespace SuperAdventureConsole
             }
             else if (input.Contains("attack"))
             {
-                if (_player.CurrentLocation.MonsterLivingHere == null)
+                if (!_player.CurrentLocation.HasAMonster)
                 {
                     Console.WriteLine("There is nobody to attack");
                 }

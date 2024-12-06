@@ -14,6 +14,7 @@ namespace EngineRPG
         private Monster _currentMonster;
         private int _gold;
         private int _experiencePoints;
+        private int _level;
         public int Gold 
         {
             get { return _gold; }
@@ -30,8 +31,8 @@ namespace EngineRPG
             
             private set
             { _experiencePoints = value;
-                OnPropertyChanged("ExperiencePoints");
-                OnPropertyChanged("Level");
+             Level = (_experiencePoints / 65) + 1;
+                OnPropertyChanged("ExperiencePoints");              
             } 
         }
         public List<Weapon> Weapons 
@@ -45,7 +46,20 @@ namespace EngineRPG
 
         public int Level 
         { 
-            get { return ((ExperiencePoints / 65) + 1); }
+            get { return _level; }
+            set
+            {
+                if (_level != value)
+                {
+                    _level = value;
+                    RaiseMessage("");
+                    RaiseMessage("LEVEL UP!!! ");
+                    RaiseMessage($"Congratulations! You are now Level {Level}.", true);
+                    RaiseMessage(" +10HP gained! ", true);
+                    OnPropertyChanged(nameof(Level));
+
+                }
+            }
         }    
         public Location CurrentLocation
         {
@@ -58,6 +72,8 @@ namespace EngineRPG
         }
         public BindingList<InventoryItem> Inventory { get; set; }
         public BindingList<PlayerQuest> Quests { get; set; }
+        private Monster CurrentMonster { get; set; }
+
         public Weapon CurrentWeapon { get; set; }
         private Player(int currentHitPoints, int maximumHitPoints, int gold, int experiencePoints) : base(currentHitPoints, maximumHitPoints)
         {
@@ -176,6 +192,16 @@ namespace EngineRPG
             // We didn't find the required item in their inventory, so return "false"
             
         }
+        private void SetTheCurrentMonsterForTheCurrentLocation(Location location)
+        {
+            // Populate the current monster with this location's monster (or null, if there is no monster here)
+            CurrentMonster = location.NewInstanceOfMonsterLivingHere();
+
+            if (CurrentMonster != null)
+            {
+                RaiseMessage("You see a " + location.MonsterLivingHere.Name);
+            }
+        }
 
         public bool PlayerHasThisQuest(Quest quest)
         {
@@ -221,12 +247,13 @@ namespace EngineRPG
                     RemoveItemFromInventory(item.Details,qci.Quantity);
                 }
             }
+            
         }
 
         public void AddItemToInventory(Item itemToAdd ,int quantity = 1 )
         {
-            InventoryItem item = Inventory.SingleOrDefault(ii => ii.Details.ID == itemToAdd.ID);
-            if (item == null)
+            InventoryItem existingItemInInventory = Inventory.SingleOrDefault(ii => ii.Details.ID == itemToAdd.ID);
+            if (existingItemInInventory == null)
             {
                 // They didn't have the item, so add it to their inventory, with a quantity of 1
                 Inventory.Add(new InventoryItem(itemToAdd, 1));
@@ -234,7 +261,7 @@ namespace EngineRPG
             else
             {
                 // They have the item in their inventory, so increase the quantity by one
-                item.Quantity += quantity;
+                existingItemInInventory.Quantity += quantity;
             }
             RaiseInventoryChangedEvent(itemToAdd);
         }
@@ -314,19 +341,19 @@ namespace EngineRPG
             }
 
             // Does the location have a monster?
-            if (newLocation.MonsterLivingHere != null)
+            if (CurrentLocation.HasAMonster)
             {
-                RaiseMessage("You see a " + newLocation.MonsterLivingHere.Name);
+                RaiseMessage("You see a " + CurrentMonster.Name);
 
                 // Make a new monster, using the values from the standard monster in the World.Monster list
-                Monster standardMonster = World.MonsterByID(newLocation.MonsterLivingHere.ID);
+                Monster standardMonster = World.MonsterByID(CurrentMonster.ID);
 
                 _currentMonster = new Monster(standardMonster.ID, standardMonster.Name, standardMonster.MaximumDamage,
                     standardMonster.RewardExperiencePoints, standardMonster.RewardGold, standardMonster.CurrentHitPoints, standardMonster.MaximumHitPoints);
 
                 foreach (LootItem lootItem in standardMonster.LootTable)
                 {
-                    _currentMonster.LootTable.Add(lootItem);
+                    CurrentMonster.LootTable.Add(lootItem);
                 }
             }
             else
@@ -360,31 +387,30 @@ namespace EngineRPG
             int damageToMonster = RandomNumberGenerator.NumberBetween(weapon.MinimumDamage, weapon.MaximumDamage);
 
             // Apply the damage to the monster's CurrentHitPoints
-            _currentMonster.CurrentHitPoints -= damageToMonster;
+            CurrentMonster.CurrentHitPoints -= damageToMonster;
 
             // Display message
-            RaiseMessage("You hit the " + _currentMonster.Name + " for " + damageToMonster + " points.");
+            RaiseMessage("You hit the " + CurrentMonster.Name + " for " + damageToMonster + " points.");
 
             // Check if the monster is dead
-            if (_currentMonster.CurrentHitPoints <= 0)
+            if (CurrentMonster.CurrentHitPoints <= 0)
             {
                 // Monster is dead
                 RaiseMessage("");
-                RaiseMessage("You defeated the " + _currentMonster.Name);
-
-                // Give player experience points for killing the monster
-                AddExperiencePoints(_currentMonster.RewardExperiencePoints);
-                RaiseMessage("You receive " + _currentMonster.RewardExperiencePoints + " experience points");
-
-                // Give player gold for killing the monster 
-                Gold += _currentMonster.RewardGold;
-                RaiseMessage("You receive " + _currentMonster.RewardGold + " gold");
+                RaiseMessage("You defeated the " + CurrentMonster.Name);
+        
+                AddExperiencePoints(CurrentMonster.RewardExperiencePoints);
+                RaiseMessage("You receive " + CurrentMonster.RewardExperiencePoints + " experience points");
+               
+                Gold += CurrentMonster.RewardGold;
+                RaiseMessage("You receive " + CurrentMonster.RewardGold + " gold");
+               
 
                 // Get random loot items from the monster
                 List<InventoryItem> lootedItems = new List<InventoryItem>();
 
                 // Add items to the lootedItems list, comparing a random number to the drop percentage
-                foreach (LootItem lootItem in _currentMonster.LootTable)
+                foreach (LootItem lootItem in CurrentMonster.LootTable)
                 {
                     if (RandomNumberGenerator.NumberBetween(1, 100) <= lootItem.DropPercentage)
                     {
@@ -395,7 +421,7 @@ namespace EngineRPG
                 // If no items were randomly selected, then add the default loot item(s).
                 if (lootedItems.Count == 0)
                 {
-                    foreach (LootItem lootItem in _currentMonster.LootTable)
+                    foreach (LootItem lootItem in CurrentMonster.LootTable)
                     {
                         if (lootItem.IsDefaultItem)
                         {
@@ -430,10 +456,10 @@ namespace EngineRPG
                 // Monster is still alive
 
                 // Determine the amount of damage the monster does to the player
-                int damageToPlayer = RandomNumberGenerator.NumberBetween(0, _currentMonster.MaximumDamage);
+                int damageToPlayer = RandomNumberGenerator.NumberBetween(0, CurrentMonster.MaximumDamage);
 
                 // Display message
-                RaiseMessage("The " + _currentMonster.Name + " did " + damageToPlayer + " points of damage.");
+                RaiseMessage("The " + CurrentMonster.Name + " did " + damageToPlayer + " points of damage.");
 
                 // Subtract damage from player
                 CurrentHitPoints -= damageToPlayer;
@@ -441,13 +467,14 @@ namespace EngineRPG
                 if (CurrentHitPoints <= 0)
                 {
                     // Display message
-                    RaiseMessage("The " + _currentMonster.Name + " killed you.");
+                    RaiseMessage("The " + CurrentMonster.Name + " killed you.");
 
                     // Move player to "Home"
                      MoveHome();
                 }
             }
         }
+
         public void UsePotion(HealingPotion potion)
         {
             // Add healing amount to the player's current hit points
@@ -468,10 +495,10 @@ namespace EngineRPG
             // Monster gets their turn to attack
 
             // Determine the amount of damage the monster does to the player
-            int damageToPlayer = RandomNumberGenerator.NumberBetween(0, _currentMonster.MaximumDamage);
+            int damageToPlayer = RandomNumberGenerator.NumberBetween(0, CurrentMonster.MaximumDamage);
 
             // Display message
-            RaiseMessage("The " + _currentMonster.Name + " did " + damageToPlayer + " points of damage.");
+            RaiseMessage("The " + CurrentMonster.Name + " did " + damageToPlayer + " points of damage.");
 
             // Subtract damage from player
             CurrentHitPoints -= damageToPlayer;
@@ -479,7 +506,7 @@ namespace EngineRPG
             if (CurrentHitPoints <= 0)
             {
                 // Display message
-                RaiseMessage("The " + _currentMonster.Name + " killed you.");
+                RaiseMessage("The " + CurrentMonster.Name + " killed you.");
 
                 // Move player to "Home"
                 MoveHome();
@@ -526,6 +553,7 @@ namespace EngineRPG
             // Create the top-level XML node
             XmlNode player = playerData.CreateElement("Player");
             playerData.AppendChild(player);
+
             XmlNode stats = CreatePlayerStatsNodeToXml(playerData, player);
 
             if (CurrentWeapon != null)
@@ -610,9 +638,12 @@ namespace EngineRPG
             player.MoveTo(World.LocationByID(currentLocationID));
             return player;
         }
+
+      
+    }
        
 
-        }
-    }
+        
+}
 
 
