@@ -118,7 +118,8 @@ namespace GameRPG
             // Get the currently selected weapon from the cboWeapons ComboBox
             Weapon currentWeapon = (Weapon)cboWeapons.SelectedItem;
             _player.UseWeapon(currentWeapon);
-           // await SoundPlay.PlayingMusic(FilePath);
+
+           // await SoundPlay.PlayingMusic(FilePath); just for testing
         }
         private void btnUsePotion_Click(object sender, EventArgs e)
         {
