@@ -16,7 +16,10 @@ namespace GameRPG
         public AdventureRPG()
         {
             InitializeComponent();
-
+            // SaveAndLoadForm saveAndLoadForm = new SaveAndLoadForm();
+           //  saveAndLoadForm.ShowDialog();
+           // saveAndLoadForm.StartPosition = FormStartPosition.WindowsDefaultLocation;
+           
             _player = PlayerDataMapper.CreateFromDatabase();
             if (_player == null)
             {
