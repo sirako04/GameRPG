@@ -10,6 +10,7 @@ namespace GameRPG
     public partial class AdventureRPG : Form
     {
         private Player _player;
+       // private const string FilePath = @"D:\audio\TownSlowed.wav";
         private const string PLAYER_DATA_FILE_NAME = "PlayerData.xml";
 
         public AdventureRPG()
@@ -29,6 +30,7 @@ namespace GameRPG
                 }
             }
             BindingPlayerDataToUI();
+            
         }
 
         private void BindingPlayerDataToUI()
@@ -108,11 +110,12 @@ namespace GameRPG
             tradingScreen.ShowDialog(this);
 
         }
-        private void btnUseWeapon_Click(object sender, EventArgs e)
+        private  void btnUseWeapon_Click(object sender, EventArgs e)
         {
             // Get the currently selected weapon from the cboWeapons ComboBox
             Weapon currentWeapon = (Weapon)cboWeapons.SelectedItem;
             _player.UseWeapon(currentWeapon);
+           // await SoundPlay.PlayingMusic(FilePath);
         }
         private void btnUsePotion_Click(object sender, EventArgs e)
         {

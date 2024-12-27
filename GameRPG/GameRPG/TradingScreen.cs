@@ -10,7 +10,6 @@ namespace GameRPG
 
         public TradingScreen(Player player)
         {
-                // ERROR player gets the valuE NULL AND IDK WHY :/
                 _currentPlayer = player;
                 InitializeComponent();
                 // Style, to display numeric column values

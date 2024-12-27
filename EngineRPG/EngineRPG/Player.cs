@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Xml;
-using System.ComponentModel;
 namespace EngineRPG
 
 {
@@ -14,39 +14,40 @@ namespace EngineRPG
         private Monster _currentMonster;
         private int _gold;
         private int _experiencePoints;
-        public int Gold 
+        public int Gold
         {
             get { return _gold; }
-            set 
-            { 
-              _gold = value;
-              OnPropertyChanged("Gold");
+            set
+            {
+                _gold = value;
+                OnPropertyChanged("Gold");
             }
 
         }
-        public int ExperiencePoints 
+        public int ExperiencePoints
         {
-            get { return _experiencePoints;} 
-            
+            get { return _experiencePoints; }
+
             private set
-            { _experiencePoints = value;
+            {
+                _experiencePoints = value;
                 OnPropertyChanged("ExperiencePoints");
                 OnPropertyChanged("Level");
-            } 
+            }
         }
-        public List<Weapon> Weapons 
+        public List<Weapon> Weapons
         {
-            get { return Inventory.Where(x => x.Details is Weapon).Select(x => x.Details as Weapon).ToList(); }    
+            get { return Inventory.Where(x => x.Details is Weapon).Select(x => x.Details as Weapon).ToList(); }
         }
-        public List<HealingPotion> Potions 
+        public List<HealingPotion> Potions
         {
-            get { return Inventory.Where(x=> x.Details is HealingPotion).Select(x => x.Details as HealingPotion).ToList(); }
+            get { return Inventory.Where(x => x.Details is HealingPotion).Select(x => x.Details as HealingPotion).ToList(); }
         }
 
-        public int Level 
-        { 
+        public int Level
+        {
             get { return ((ExperiencePoints / 65) + 1); }
-        }    
+        }
         public Location CurrentLocation
         {
             get { return _currentLocation; }
@@ -62,13 +63,13 @@ namespace EngineRPG
         private Player(int currentHitPoints, int maximumHitPoints, int gold, int experiencePoints) : base(currentHitPoints, maximumHitPoints)
         {
             Gold = gold;
-            ExperiencePoints = experiencePoints;          
+            ExperiencePoints = experiencePoints;
             Inventory = new BindingList<InventoryItem>();
             Quests = new BindingList<PlayerQuest>();
         }
         public static Player CreateDefaultPlayer()
         {
-            Player player = new Player(10,10,20,0);
+            Player player = new Player(10, 10, 20, 0);
             player.Inventory.Add(new InventoryItem(World.ItemByID(World.ITEM_ID_RUSTY_SWORD), 1));
             player.CurrentLocation = World.LocationByID(World.LOCATION_ID_HOME);
             return player;
@@ -76,11 +77,11 @@ namespace EngineRPG
         public void AddExperiencePoints(int experiencePointsToAdd)
         {
             ExperiencePoints += experiencePointsToAdd;
-            MaximumHitPoints = (Level*10);
+            MaximumHitPoints = (Level * 10);
         }
-        private void RaiseInventoryChangedEvent(Item item) 
+        private void RaiseInventoryChangedEvent(Item item)
         {
-            if(item is Weapon) 
+            if (item is Weapon)
             {
                 OnPropertyChanged(nameof(Weapons));
             }
@@ -89,13 +90,13 @@ namespace EngineRPG
                 OnPropertyChanged(nameof(Potions));
             }
         }
-        public void RemoveItemFromInventory(Item ItemtoRemove, int quantity = 1) 
+        public void RemoveItemFromInventory(Item ItemtoRemove, int quantity = 1)
         {
-           InventoryItem item = Inventory.SingleOrDefault(ii => ii.Details.ID ==ItemtoRemove.ID );
-            if (item == null) 
+            InventoryItem item = Inventory.SingleOrDefault(ii => ii.Details.ID == ItemtoRemove.ID);
+            if (item == null)
             {
                 // error 
-                
+
             }
             else
             {
@@ -113,7 +114,7 @@ namespace EngineRPG
             }
 
 
-        }          
+        }
         public static Player CreatePlayerFromXmlString(string xmlPlayerData)
         {
             try
@@ -155,7 +156,7 @@ namespace EngineRPG
                 }
                 return player;
             }
-            catch  
+            catch
             {
                 // If there was an error with the XML data, return a default player object
 
@@ -173,13 +174,13 @@ namespace EngineRPG
             // See if the player has the required item in their inventory
             return Inventory.Any(ii => ii.Details.ID == location.ItemRequiredToEnter.ID);
 
-            // We didn't find the required item in their inventory, so return "false"
-            
+     
+
         }
 
         public bool PlayerHasThisQuest(Quest quest)
         {
-           return Quests.Any(pq => pq.Details.ID == quest.ID);
+            return Quests.Any(pq => pq.Details.ID == quest.ID);
         }
 
         public bool CompletedThisQuest(Quest quest)
@@ -218,12 +219,12 @@ namespace EngineRPG
                 if (item != null)
                 {
                     // Subtract the quantity from the player's inventory that was needed to complete the quest
-                    RemoveItemFromInventory(item.Details,qci.Quantity);
+                    RemoveItemFromInventory(item.Details, qci.Quantity);
                 }
             }
         }
 
-        public void AddItemToInventory(Item itemToAdd ,int quantity = 1 )
+        public void AddItemToInventory(Item itemToAdd, int quantity = 1)
         {
             InventoryItem item = Inventory.SingleOrDefault(ii => ii.Details.ID == itemToAdd.ID);
             if (item == null)
@@ -270,10 +271,10 @@ namespace EngineRPG
 
             if (newLocation.HasAQuest)
             {
-                         
+
                 if (PlayerHasThisQuest(newLocation.QuestAvailableHere))
                 {
-                   
+
                     if (!CompletedThisQuest(newLocation.QuestAvailableHere))
                     {
                         // See if the player has all the items needed to complete the quest
@@ -347,15 +348,16 @@ namespace EngineRPG
 
             AddExperiencePoints(newLocation.QuestAvailableHere.RewardExperiencePoints);
             Gold += newLocation.QuestAvailableHere.RewardGold;
-      
+
             RemoveQuestCompletionItems(newLocation.QuestAvailableHere);
             AddItemToInventory(newLocation.QuestAvailableHere.RewardItem);
-           
+
             MarkQuestCompleted(newLocation.QuestAvailableHere);
         }
 
         public void UseWeapon(Weapon weapon)
         {
+            
             // Determine the amount of damage to do to the monster
             int damageToMonster = RandomNumberGenerator.NumberBetween(weapon.MinimumDamage, weapon.MaximumDamage);
 
@@ -427,6 +429,7 @@ namespace EngineRPG
             }
             else
             {
+               
                 // Monster is still alive
 
                 // Determine the amount of damage the monster does to the player
@@ -444,12 +447,13 @@ namespace EngineRPG
                     RaiseMessage("The " + _currentMonster.Name + " killed you.");
 
                     // Move player to "Home"
-                     MoveHome();
+                    MoveHome();
                 }
             }
         }
-        public void UsePotion(HealingPotion potion)
+        public async void UsePotion(HealingPotion potion)
         {
+            await SoundPlay.PlayingMusic(@"D:\audio\TownSlowed.wav");
             // Add healing amount to the player's current hit points
             CurrentHitPoints += potion.AmountToHeal;
 
@@ -485,7 +489,7 @@ namespace EngineRPG
                 MoveHome();
             }
         }
-        private void MoveHome() 
+        private void MoveHome()
         {
             MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
         }
@@ -604,15 +608,15 @@ namespace EngineRPG
             }
         }
 
-        public static Player CreatePlayerFromDataBase(int currentHitPoints,int maximumHitPoints,int gold, int experiencePoints, int currentLocationID) 
+        public static Player CreatePlayerFromDataBase(int currentHitPoints, int maximumHitPoints, int gold, int experiencePoints, int currentLocationID)
         {
-            Player player = new Player(currentHitPoints,maximumHitPoints,gold,experiencePoints);
+            Player player = new Player(currentHitPoints, maximumHitPoints, gold, experiencePoints);
             player.MoveTo(World.LocationByID(currentLocationID));
             return player;
         }
-       
 
-        }
+
     }
+}
 
 
