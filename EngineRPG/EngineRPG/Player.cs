@@ -451,9 +451,8 @@ namespace EngineRPG
                 }
             }
         }
-        public async void UsePotion(HealingPotion potion)
+        public void UsePotion(HealingPotion potion)
         {
-            await SoundPlay.PlayingMusic(@"D:\audio\TownSlowed.wav");
             // Add healing amount to the player's current hit points
             CurrentHitPoints += potion.AmountToHeal;
 

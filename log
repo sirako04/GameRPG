@@ -1,0 +1,109 @@
+[33mcommit 83a8b174893085acaf83d96eaacff5910647a334[m[33m ([m[1;36mHEAD[m[33m)[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Fri Dec 27 15:50:15 2024 +0100
+
+    coloring the form
+
+[33mcommit f38c99f8c3770c6d98508b02ebb5ecb16395ec9f[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Fri Dec 27 15:44:26 2024 +0100
+
+    coloring the form so it does not look that plain rn
+
+[33mcommit b5e8aa3e0414cce5e1b6692f61c047ee596bc6d8[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Fri Dec 27 13:45:28 2024 +0100
+
+    stable version
+
+[33mcommit fde6b4c5bcaed5ad6ffa0c940fce9de59fecccd6[m[33m ([m[1;31morigin/master[m[33m)[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Fri Nov 29 20:26:14 2024 +0100
+
+    Refactoring 2.0
+
+[33mcommit 42a5a49100e411a527d22c0528c9682138588cf5[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Thu Nov 28 18:25:08 2024 +0100
+
+    Refactor 1.0
+
+[33mcommit de01d9ae5209fa89439a80c6ef82bd7125a938c1[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Thu Nov 28 16:15:35 2024 +0100
+
+    Before refactoring
+
+[33mcommit 989108e549e8bcf38371715df15c4386f5564b41[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Tue Nov 26 15:06:46 2024 +0100
+
+    added save and load func via SQL-Server
+    AND added console UI
+
+[33mcommit 2e9dc2fef43a7ee87e6a65f94365e798b6d84a18[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Sat Nov 23 21:25:47 2024 +0100
+
+    added a vendor functionality with sell and buy and a new form for trade
+
+[33mcommit b497c77b7549af9fcdee07659fe613600517d1b8[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Sat Nov 16 17:53:26 2024 +0100
+
+    latest version 2.0.1
+
+[33mcommit dbfd0e27135682ed19378ad6d54caae0a62a7fe5[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Thu Nov 14 18:20:09 2024 +0100
+
+    BIG Refactoring
+    Version 2.0
+
+[33mcommit 9cece6a2c57b6adbe33acaae9b6886d18f3f2c17[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Thu Nov 14 13:49:13 2024 +0100
+
+    refactoring version 1.0
+
+[33mcommit 1069d3de73eb395584ba00b19dfd20c53524cea3[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Sun Oct 27 20:16:45 2024 +0100
+
+    added a save function
+
+[33mcommit 600a3cf0db16f6e6920920deba2d8a1ccac71151[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Thu Oct 24 22:30:32 2024 +0200
+
+    Working RPG game
+
+[33mcommit 30eae811bf255f54da52ceb4ed442ae2e0f8062f[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Wed Oct 23 14:01:24 2024 +0200
+
+    almost functioning game
+
+[33mcommit 7b7ed33dd1a8bcf48bb1ddabd28d77a30ef9e6fd[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Tue Oct 22 19:05:22 2024 +0200
+
+    update
+
+[33mcommit e5fde3871c426ddbb455fe5501bdcc2b68ffc7a0[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Fri Oct 18 21:55:04 2024 +0200
+
+    update
+
+[33mcommit feaca51f24307e3fab927e0661552496080039f7[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Fri Oct 18 20:54:07 2024 +0200
+
+    Add project files.
+
+[33mcommit c5b8b41cd7a0a463da48f4f0078ff0170c07337c[m
+Author: Sirako <karissirak6@gmail.com>
+Date:   Fri Oct 18 20:54:05 2024 +0200
+
+    Add .gitattributes and .gitignore.

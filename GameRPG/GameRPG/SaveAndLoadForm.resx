@@ -124,18 +124,21 @@
   <data name="btnNewGame.BackgroundImageLayout" type="System.Windows.Forms.ImageLayout, System.Windows.Forms">
     <value>Center</value>
   </data>
+  <data name="btnNewGame.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
+    <value>Popup</value>
+  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="btnNewGame.Font" type="System.Drawing.Font, System.Drawing">
     <value>Yu Gothic, 14.25pt, style=Bold, Italic</value>
   </data>
   <data name="btnNewGame.Location" type="System.Drawing.Point, System.Drawing">
-    <value>102, 236</value>
+    <value>102, 239</value>
   </data>
   <data name="btnNewGame.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>5, 5, 5, 5</value>
   </data>
   <data name="btnNewGame.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 63</value>
+    <value>180, 60</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="btnNewGame.TabIndex" type="System.Int32, mscorlib">
@@ -166,7 +169,7 @@
     <value>None</value>
   </data>
   <data name="LoadPlayer.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
-    <value>Flat</value>
+    <value>Popup</value>
   </data>
   <data name="LoadPlayer.Font" type="System.Drawing.Font, System.Drawing">
     <value>Yu Gothic, 14.25pt, style=Bold, Italic</value>

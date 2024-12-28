@@ -10,13 +10,11 @@ namespace EngineRPG
 
         public static async Task PlayingMusic(string filePath)
         {
-           //  string FilePath = @"D:\audio\TownSlowed.wav";
             try
             {
+               
                 // Sound asynchron abspielen
                 await PlaySoundAsync(filePath);
-
-                Console.WriteLine("Sound finished.");
             }
             catch (Exception ex)
             {
@@ -54,6 +52,7 @@ namespace EngineRPG
                         }
 
                         Console.WriteLine("Sound finished.");
+
                         
                     }
                     if (!isPlaying)
@@ -70,6 +69,7 @@ namespace EngineRPG
         } 
             private static void StopSound()
             {
+                
                 isPlaying = false;
             }
     }
